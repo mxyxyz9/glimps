@@ -1,0 +1,59 @@
+{
+  "development": {
+    "frontend": {
+      "url": "http://localhost:3000",
+      "apiUrl": "http://localhost:5000/api",
+      "buildCommand": "npm run build",
+      "startCommand": "npm run dev"
+    },
+    "backend": {
+      "url": "http://localhost:5000",
+      "port": 5000,
+      "buildCommand": "npm run build",
+      "startCommand": "npm run dev"
+    },
+    "database": {
+      "host": "localhost",
+      "port": 3306,
+      "name": "timelapse_journal"
+    }
+  },
+  "staging": {
+    "frontend": {
+      "url": "https://staging.yourdomain.com",
+      "apiUrl": "https://api-staging.yourdomain.com/api",
+      "buildCommand": "npm run build:prod",
+      "startCommand": "npm run start:prod"
+    },
+    "backend": {
+      "url": "https://api-staging.yourdomain.com",
+      "port": 5000,
+      "buildCommand": "npm run build:prod",
+      "startCommand": "npm run start:prod"
+    },
+    "database": {
+      "host": "staging-db.yourdomain.com",
+      "port": 3306,
+      "name": "timelapse_journal_staging"
+    }
+  },
+  "production": {
+    "frontend": {
+      "url": "https://yourdomain.com",
+      "apiUrl": "https://api.yourdomain.com/api",
+      "buildCommand": "npm run build:prod",
+      "startCommand": "npm run start:prod"
+    },
+    "backend": {
+      "url": "https://api.yourdomain.com",
+      "port": 5000,
+      "buildCommand": "npm run build:prod",
+      "startCommand": "npm run start:prod"
+    },
+    "database": {
+      "host": "prod-db.yourdomain.com",
+      "port": 3306,
+      "name": "timelapse_journal_prod"
+    }
+  }
+}

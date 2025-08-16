@@ -1,0 +1,77 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: timelapse-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: timelapse_journal
+      MYSQL_USER: timelapse_user
+      MYSQL_PASSWORD: timelapse_password
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./backend-simple/scripts/01-init.sql:/docker-entrypoint-initdb.d/01-init.sql
+    networks:
+      - app-network
+
+  backend:
+    build:
+      context: ./backend-simple
+      dockerfile: Dockerfile
+    ports:
+      - "5000:5000"
+    environment:
+      - NODE_ENV=development
+      - PORT=3002
+      - FRONTEND_URL=http://localhost:3000
+      - DB_HOST=mysql
+      - DB_PORT=3306
+      - DB_NAME=timelapse_journal
+      - DB_USER=timelapse_user
+      - DB_PASSWORD=timelapse_password
+      - JWT_ACCESS_SECRET=your_super_secret_jwt_access_key_change_this_in_production
+      - JWT_REFRESH_SECRET=your_super_secret_jwt_refresh_key_change_this_in_production
+      - JWT_ACCESS_EXPIRY=15m
+      - JWT_REFRESH_EXPIRY=7d
+    volumes:
+      - ./backend-simple/uploads:/app/uploads
+    depends_on:
+      - mysql
+    networks:
+      - app-network
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.dev
+    ports:
+      - "3001:3000"
+    environment:
+      - NODE_ENV=development
+      - NEXT_PUBLIC_API_URL=http://localhost:5000/api
+    volumes:
+      - ./frontend/app:/app/app
+      - ./frontend/components:/app/components
+      - ./frontend/lib:/app/lib
+      - ./frontend/hooks:/app/hooks
+      - ./frontend/styles:/app/styles
+      - ./frontend/public:/app/public
+      - ./frontend/package.json:/app/package.json
+      - ./frontend/next.config.mjs:/app/next.config.mjs
+      - ./frontend/tailwind.config.ts:/app/tailwind.config.ts
+      - ./frontend/tsconfig.json:/app/tsconfig.json
+    command: npm run dev
+    depends_on:
+      - backend
+    networks:
+      - app-network
+
+volumes:
+  mysql_data:
+
+networks:
+  app-network:
+    driver: bridge
